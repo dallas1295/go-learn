@@ -1,0 +1,44 @@
+package main
+
+import tea "github.com/charmbracelet/bubbletea"
+
+type tttUI struct {
+	markers [9]string
+	current int
+}
+
+const (
+	z = " "
+	x = "X"
+	o = "O"
+)
+
+func NewTTTUI() tttUI {
+	t := tttUI{}
+	for i := range 9 {
+		t.markers[i] = ""
+	}
+}
+
+// Init implements tea.Model.
+func (t tttUI) Init() tea.Cmd {
+	return nil
+}
+
+// Update implements tea.Model.
+func (t tttUI) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	switch msg := msg.(type) {
+	case tea.KeyMsg:
+		switch msg.String() {
+		case "ctrl+c":
+			return t, tea.Quit
+		}
+	}
+	return t, nil
+}
+
+// View implements tea.Model.
+func (t tttUI) View() string {
+}
+
+var _ tea.Model = tttUI{}

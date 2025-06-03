@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 )
 
 type tttUI struct {
@@ -27,6 +28,9 @@ func NewTTTUI() tttUI {
 }
 
 func (t tttUI) Get(i int) string {
+	if i == t.current {
+		return lipgloss.NewStyle().Foreground(lipgloss.Color("#000000")).Background(lipgloss.Color("#FFFFFF")).Render(t.markers[i])
+	}
 	return t.markers[i]
 }
 
@@ -42,6 +46,18 @@ func (t tttUI) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch msg.String() {
 		case "ctrl+c":
 			return t, tea.Quit
+		case "k":
+			t.current = (t.current + 6) % 9
+		case "j":
+			t.current = (t.current + 3) % 9
+		case "l":
+			t.current = (t.current + 1) % 9
+		case "h":
+			t.current = (t.current - 1) % 9
+		case "x":
+			t.markers[t.current] = x
+		case "o":
+			t.markers[t.current] = o
 		}
 	}
 	return t, nil
@@ -51,9 +67,9 @@ func (t tttUI) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (t tttUI) View() string {
 	return "Tic Tac Toe\n" +
 		" " + t.Get(0) + " | " + t.Get(1) + " | " + t.Get(2) + "\n" +
-		strings.Repeat("-", 8) + "\n" +
+		strings.Repeat("-", 11) + "\n" +
 		" " + t.Get(3) + " | " + t.Get(4) + " | " + t.Get(5) + "\n" +
-		strings.Repeat("-", 8) + "\n" +
+		strings.Repeat("-", 11) + "\n" +
 		" " + t.Get(6) + " | " + t.Get(7) + " | " + t.Get(8) + "\n"
 }
 
@@ -64,7 +80,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	p := tea.NewProgram(tttUI{})
+	p := tea.NewProgram(NewTTTUI())
 	if _, err := p.Run(); err != nil {
 		log.Fatal(err)
 	}

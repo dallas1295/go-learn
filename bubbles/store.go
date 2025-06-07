@@ -90,7 +90,29 @@ func (s *Store) GetNotes() ([]Note, error) {
 	return notes, nil
 }
 
+func (s *Store) nextID() (int64, error) {
+	notes, err := s.GetNotes()
+	if err != nil {
+		return 1, nil // If error, start at 1
+	}
+	var maxID int64
+	for _, n := range notes {
+		if n.ID > maxID {
+			maxID = n.ID
+		}
+	}
+	return maxID + 1, nil
+}
+
 func (s *Store) SaveNote(note Note) error {
+	if note.ID == 0 {
+		id, err := s.nextID()
+		if err != nil {
+			return err
+		}
+		note.ID = id
+	}
+
 	filename := fmt.Sprintf("note-%d.txt", note.ID)
 	path := filepath.Join(s.notesDir, filename)
 	content := fmt.Sprintf("ID: %d\nTitle: %s\n\n%s", note.ID, note.Title, note.Body)

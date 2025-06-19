@@ -1,3 +1,4 @@
+// Package main is to run the app
 package main
 
 import (
